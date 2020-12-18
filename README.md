@@ -136,4 +136,32 @@ gg_files <- c(gg_files,paste0('gg',i,'.png'))
 gifski(png_files = gg_files, gif_file = "final.gif", delay = 1, loop = TRUE, width = 864, height = 576)
 ```
 
+# Statistics
 
+```
+# load in required packages
+library("lme4")
+
+## Linear models:
+	## model: includes an interaction between growth probability and lightning probability, and the repeated runs as a random effect.
+	## model1: includes both variables (growp and lightp), but they do not interact
+	## model2: includes only growp
+	## model3: includes only lightp
+model <- lmer(trees ~growp*lightp + (1|run), data = data3)
+model1 <- lmer(trees ~growp + lightp + (1|run), data = data3)
+model2 <- lmer(trees ~growp + (1|run), data = data3)
+model3 <- lmer(trees ~lightp + (1|run), data = data3)
+
+hist(residuals(model))
+qqnorm(residuals(model))
+summary(model)
+
+anova(model, model1, refit = TRUE)
+# anova between model and model1 is not significant--there is no interaction and following models can be built without one of the explanatory variables
+anova(model1, model2, refit = TRUE)
+# this is highly significant--lightp causes a signficant difference
+anova(model1, model3, refit = TRUE)
+# this is also highly signficant--growp causes a significant difference
+
+
+```
